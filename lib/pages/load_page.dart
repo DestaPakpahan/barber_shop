@@ -10,7 +10,7 @@ class LoadPage extends StatelessWidget {
       backgroundColor: const Color(0xFF002583),
       body: Column(
         children: [
-          // 🔵 BAGIAN ATAS (LOGO)
+          // BAGIAN ATAS (LOGO)
           Expanded(
             flex: 5,
             child: Center(
@@ -18,7 +18,7 @@ class LoadPage extends StatelessWidget {
             ),
           ),
 
-          // ⚪ BAGIAN BAWAH (FORM)
+          // BAGIAN BAWAH (FORM)
           Expanded(
             flex: 4,
             child: Container(
@@ -104,7 +104,7 @@ class LoadPage extends StatelessWidget {
 
                   const Spacer(),
 
-                  // 🔥 BUTTON MASUK
+                  // BUTTON MASUK
                   GestureDetector(
                     onTap: () {
                       Navigator.pushReplacement(

@@ -4,7 +4,7 @@ class StatCard extends StatelessWidget {
   final String title;
   final String value;
   final IconData icon;
-  final String? subtitle; // ✅ tambahkan ini
+  final String? subtitle;
 
   const StatCard({
     super.key,
@@ -53,7 +53,7 @@ class StatCard extends StatelessWidget {
             ),
           ),
 
-          // 🔥 SUBTITLE BARU
+          // SUBTITLE BARU
           if (subtitle != null)
             Text(
               subtitle!,

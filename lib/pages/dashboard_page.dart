@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../widgets/stat_card.dart';
 import 'owner_all_page.dart';
+import 'daftar_cabang.dart';
+import 'total_transaksi.dart';
+import 'notifikasi.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -9,7 +12,6 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       bottomNavigationBar: Container(
         height: 65,
         decoration: const BoxDecoration(
@@ -20,7 +22,6 @@ class DashboardPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             const Icon(Icons.home, color: Color(0xFFFEB800)),
-
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -32,252 +33,302 @@ class DashboardPage extends StatelessWidget {
               },
               child: const Icon(Icons.people, color: Colors.white),
             ),
-
             const Icon(Icons.folder, color: Colors.white),
             const Icon(Icons.person, color: Colors.white),
           ],
         ),
       ),
-
       body: SafeArea(
         child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // NOTIF
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NotifikasiPage()),
+                    );
+                  },
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Stack(
+                      children: [
+                        const Icon(
+                          Icons.notifications,
+                          size: 28,
+                          color: Color(0xFF002583),
+                        ),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 1.5),
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 10,
+                              minHeight: 10,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
 
-              // 🔔 NOTIF
-              Align(
-                alignment: Alignment.topRight,
-                child: Stack(
-                  children: const [
-                    Icon(Icons.notifications,
-                        size: 28,
-                        color: Color(0xFF002583)),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: CircleAvatar(
-                        radius: 5,
-                        backgroundColor: Colors.red,
+                const SizedBox(height: 20),
+
+                // HEADER
+                const Text(
+                  "Hi Developer!",
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF002583),
+                  ),
+                ),
+                const Text(
+                  "Let's manage the barbershop ecosystem.",
+                  style: TextStyle(color: Color(0xFFFEB800)),
+                ),
+
+                const SizedBox(height: 20),
+
+                // PLATFORM OVERVIEW
+                const Text(
+                  "Platform Overview",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF002583),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  clipBehavior: Clip.none,
+                  child: Row(
+                    children: [
+                      _buildStatCardWrapper(
+                        context,
+                        const StatCard(
+                          title: "Total Owner",
+                          value: "12 owner",
+                          subtitle: "1 Menunggu Aktivasi",
+                          icon: Icons.groups,
+                        ),
+                        const OwnerAllPage(),
                       ),
-                    )
+                      const SizedBox(width: 15),
+                      _buildStatCardWrapper(
+                        context,
+                        const StatCard(
+                          title: "Total Cabang",
+                          value: "20 cabang",
+                          icon: Icons.store,
+                        ),
+                        const DaftarCabangPage(),
+                      ),
+                      const SizedBox(width: 15),
+                      _buildStatCardWrapper(
+                        context,
+                        const StatCard(
+                          title: "Total Transaksi",
+                          value: "124 transaksi",
+                          icon: Icons.receipt_long,
+                        ),
+                        const TotalTransaksiPage(),
+                      ),
+                      const SizedBox(width: 20),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // FINANCIAL MONITORING
+                const Text(
+                  "Financial Monitoring",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF002583),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    _financialBox("Rp45.000.000", "Total Deposit Owner"),
+                    const SizedBox(width: 10),
+                    _financialBox("5 orang", "Owner Perlu Top-Up"),
                   ],
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // 🔥 HEADER
-              const Text(
-                "Hi Developer!",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF002583),
+                // AKTIVITAS SALDO
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDDE3F0),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        "Aktivitas Saldo Terkini",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF002583),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _activityItem("Top-up Berhasil Siti Nur Holifa +Rp1.000.000 (17:30 WIB)"),
+                            _divider(),
+                            _activityItem("Top-up Berhasil Desta Pakpahan +Rp500.000 (15.00)"),
+                            _divider(),
+                            _activityItem("Saldo Kritis Fikriawan — Sisa Rp12.000 (Sistem sudah mengirim pengingat)"),
+                            _divider(),
+                            _activityItem("Top-up Berhasil Sheila Putri +Rp5.000.000 (09.40)"),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
-              const Text(
-                "Let's manage the barbershop ecosystem.",
-                style: TextStyle(color: Color(0xFFFEB800)),
-              ),
+                const SizedBox(height: 25),
 
-              const SizedBox(height: 20),
-
-              // 🔥 PLATFORM OVERVIEW (DULUAN)
-              const Text(
-                "Platform Overview",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF002583),
+                // SECTION: OWNER PERLU TOP-UP
+                const Text(
+                  "Owner Perlu Top-Up",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF002583),
+                  ),
                 ),
-              ),
-
-              const SizedBox(height: 10),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const OwnerAllPage(),
-                          ),
-                        );
-                      },
-                      child: const StatCard(
-                        title: "Total Owner",
-                        value: "12 owner",
-                        subtitle: "1 Menunggu Aktivasi",
-                        icon: Icons.groups,
-                      ),
-                    ),
+                const SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFEBEB),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.red.shade100),
                   ),
-                  const SizedBox(width: 10),
-                  const Expanded(
-                    child: StatCard(
-                      title: "Total Cabang",
-                      value: "20 cabang",
-                      icon: Icons.store,
-                    ),
+                  child: Column(
+                    children: [
+                      _ownerCriticalItem("Fikriawan", "Rp80.000", "Potong Boss"),
+                      _dividerRed(),
+                      _ownerCriticalItem("Baskara Putra", "Rp78.000", "Bass Cuts"),
+                      _dividerRed(),
+                      _ownerCriticalItem("Madukina", "Rp60.000", "Pangkas Jogja"),
+                      _dividerRed(),
+                      _ownerCriticalItem("Clarissa", "Rp74.000", "Sudut Barber"),
+                      _dividerRed(),
+                      _ownerCriticalItem("Adrian Mahendra", "Rp92.000", "Barber Yuk"),
+                    ],
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              // 🔥 FINANCIAL MONITORING (PINDAH KE SINI)
-              const Text(
-                "Financial Monitoring",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF002583),
                 ),
-              ),
-
-              const SizedBox(height: 10),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEBF1FD),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Column(
-                        children: [
-                          Text(
-                            "Rp45.000.000",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF002583),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text("Total Deposit Owner"),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEBF1FD),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Column(
-                        children: [
-                          Text(
-                            "5 orang",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF002583),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text("Owner Perlu Top-Up"),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              // 🔥 AKTIVITAS
-
-              Container(
-  width: double.infinity,
-  padding: const EdgeInsets.all(15),
-  decoration: BoxDecoration(
-    color: const Color(0xFFDDE3F0), // 🔥 outer abu
-    borderRadius: BorderRadius.circular(20),
-  ),
-  child: Column(
-    children: [
-
-      const Text(
-        "Aktivitas Saldo Terkini",
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF002583),
-        ),
-      ),
-
-      const SizedBox(height: 10),
-
-      Container(
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            _activityItem(
-              "Top-up Berhasil Siti Nur Holifa +Rp1.000.000 (17:30 WIB)",
+                const SizedBox(height: 30),
+              ],
             ),
-
-            _divider(),
-
-            _activityItem(
-              "Top-up Berhasil Desta Pakpahan +Rp500.000 (15.00)",
-            ),
-
-            _divider(),
-
-            _activityItem(
-              "Saldo Kritis Fikriawan — Sisa Rp12.000 (Sistem sudah mengirim pengingat)",
-            ),
-
-            _divider(),
-
-            _activityItem(
-              "Top-up Berhasil Sheila Putri +Rp5.000.000 (09.40)",
-            ),
-          ],
-        ),
-      ),
-    ],
-  ),
-),
-            ],
           ),
-        ),
         ),
       ),
     );
   }
-}
 
-Widget _activityItem(String text) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8),
-    child: Text(
-      text,
-      style: const TextStyle(
-        color: Color(0xFF002583),
-        fontSize: 10,
+  Widget _buildStatCardWrapper(BuildContext context, Widget card, Widget targetPage) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.7,
+      child: GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => targetPage)),
+        child: card,
       ),
-    ),
-  );
-}
+    );
+  }
 
-Widget _divider() {
-  return Container(
-    height: 1,
-    margin: const EdgeInsets.symmetric(vertical: 4),
-    color: const Color(0xFFFEB800), // 🔥 garis kuning
-  );
+  Widget _financialBox(String value, String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEBF1FD),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF002583)),
+            ),
+            const SizedBox(height: 5),
+            Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _activityItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(
+        text,
+        style: const TextStyle(color: Color(0xFF002583), fontSize: 10),
+      ),
+    );
+  }
+
+  Widget _divider() {
+    return Container(
+      height: 1,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      color: const Color(0xFFFEB800),
+    );
+  }
+
+  Widget _ownerCriticalItem(String name, String balance, String shop) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFD32F2F), fontSize: 13)),
+              Text(shop, style: const TextStyle(color: Colors.black54, fontSize: 11)),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
+            child: Text(balance, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _dividerRed() {
+    return Divider(color: Colors.red.shade100, thickness: 1, height: 1);
+  }
 }
