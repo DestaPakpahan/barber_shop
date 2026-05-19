@@ -1,8 +1,43 @@
 import 'package:flutter/material.dart';
 import 'dashboard_page.dart';
+import 'package:baber/services/api_service.dart';
 
-class LoadPage extends StatelessWidget {
+class LoadPage extends StatefulWidget {
   const LoadPage({super.key});
+
+  @override
+  State<LoadPage> createState() => _LoadPageState();
+}
+
+class _LoadPageState extends State<LoadPage> {
+  // Tambahkan Controller agar data yang kamu ketik bisa dikirim ke API
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final ApiService apiService = ApiService();
+
+  // Fungsi handleLogin disesuaikan untuk mengirim email & password
+  void handleLogin() async {
+    String email = emailController.text;
+    String password = passwordController.text;
+
+    // Menjalankan fungsi login dari ApiService
+    final response = await apiService.login(email, password);
+
+    if (response != null && mounted) {
+      // Jika login berhasil, lanjut ke Dashboard
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const DashboardPage()),
+      );
+    } else {
+      // Jika gagal, munculkan pesan error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login Gagal! Periksa Email/Password")),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +45,7 @@ class LoadPage extends StatelessWidget {
       backgroundColor: const Color(0xFF002583),
       body: Column(
         children: [
-          // BAGIAN ATAS (LOGO)
+          // BAGIAN ATAS (LOGO) - Tetap sama seperti aslimu
           Expanded(
             flex: 5,
             child: Center(
@@ -18,7 +53,7 @@ class LoadPage extends StatelessWidget {
             ),
           ),
 
-          // BAGIAN BAWAH (FORM)
+          // BAGIAN BAWAH (FORM) - Tetap sama seperti aslimu
           Expanded(
             flex: 4,
             child: Container(
@@ -56,15 +91,14 @@ class LoadPage extends StatelessWidget {
                   const SizedBox(height: 5),
 
                   TextField(
-                    style: const TextStyle(fontSize: 14), // 🔥 teks lebih kecil
+                    controller: emailController, // Menghubungkan controller
+                    style: const TextStyle(fontSize: 14), 
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: const Color(
-                        0xFFE0E6F2,
-                      ), // 🔥 lebih gelap dari sebelumnya
+                      fillColor: const Color(0xFFE0E6F2), 
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12,
-                        vertical: 10, // 🔥 bikin lebih pendek
+                        vertical: 10, 
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -79,6 +113,7 @@ class LoadPage extends StatelessWidget {
                   const SizedBox(height: 5),
 
                   TextField(
+                    controller: passwordController, // Menghubungkan controller
                     obscureText: true,
                     style: const TextStyle(fontSize: 14),
                     decoration: InputDecoration(
@@ -106,14 +141,7 @@ class LoadPage extends StatelessWidget {
 
                   // BUTTON MASUK
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const DashboardPage(),
-                        ),
-                      );
-                    },
+                    onTap: handleLogin, // Memanggil fungsi login ke API
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 14),

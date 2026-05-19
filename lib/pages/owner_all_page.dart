@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/owner_card.dart';
+import 'package:baber/services/api_service.dart'; // Pastikan path sesuai
+import '../widgets/owner_card.dart'; // Pastikan path sesuai
 
 class OwnerAllPage extends StatefulWidget {
   const OwnerAllPage({super.key});
@@ -11,41 +12,23 @@ class OwnerAllPage extends StatefulWidget {
 class _OwnerAllPageState extends State<OwnerAllPage> {
   String activeTab = "Semua";
   String searchQuery = "";
+  final ApiService apiService = ApiService();
 
-  // 1. Data Gabungan (Diberi flag 'status')
-  final List<Map<String, dynamic>> allOwners = [
+  // Data Dummy untuk fallback jika API kosong atau offline
+  final List<Map<String, dynamic>> dummyOwners = [
     {"name": "Desta Pakpahan", "cabang": 2, "status": "active"},
     {"name": "Siti Nur Holifa", "cabang": 1, "status": "active"},
-    {"name": "Ahmad Zaki - Gentleman Cut", "status": "pending", "time": "2 hours ago", "wa": "0812-3456-7891", "email": "Zaki@gmail.com", "lokasi": "Condongcatur, Sleman", "rencana": 1},
+    {
+      "name": "Ahmad Zaki - Gentleman Cut",
+      "status": "pending",
+      "time": "2 hours ago",
+      "wa": "0812-3456-7891",
+      "email": "Zaki@gmail.com",
+      "lokasi": "Condongcatur, Sleman",
+      "rencana": 1
+    },
     {"name": "Sheila Putri", "cabang": 3, "status": "active"},
-    {"name": "Baskara Putra", "cabang": 2, "status": "active"},
-    {"name": "Nadin Amizah", "cabang": 2, "status": "active"},
-    {"name": "Fikriawan", "cabang": 2, "status": "active"},
   ];
-
-  List<Map<String, dynamic>> filteredOwners = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _applyFilter();
-  }
-
-  void _applyFilter() {
-    setState(() {
-      filteredOwners = allOwners.where((owner) {
-        final matchesSearch = owner["name"].toLowerCase().contains(searchQuery.toLowerCase());
-        
-        bool matchesTab;
-        if (activeTab == "Semua") {
-          matchesTab = (owner["status"] == "active");
-        } else {
-          matchesTab = (owner["status"] == "pending");
-        }
-        return matchesSearch && matchesTab;
-      }).toList();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +43,12 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
               _buildHeader(),
               const SizedBox(height: 15),
               
-              // SEARCH
+              // INPUT PENCARIAN
               TextField(
                 onChanged: (value) {
-                  searchQuery = value;
-                  _applyFilter();
+                  setState(() {
+                    searchQuery = value;
+                  });
                 },
                 decoration: InputDecoration(
                   hintText: "Cari Nama Owner",
@@ -83,7 +67,7 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
               
               const SizedBox(height: 10),
 
-              // FILTER TABS
+              // TAB FILTER
               Row(
                 children: [
                   _buildTabButton("Semua"),
@@ -94,32 +78,63 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
 
               const SizedBox(height: 15),
 
-              // LIST DINAMIS
+              // LIST DATA (API + DUMMY)
               Expanded(
-                child: filteredOwners.isEmpty
-                    ? const Center(child: Text("Data tidak ditemukan", style: TextStyle(color: Colors.grey)))
-                    : ListView.builder(
-                        itemCount: filteredOwners.length,
-                        itemBuilder: (context, index) {
-                          final owner = filteredOwners[index];
-                          
-                          if (owner["status"] == "pending") {
-                            return PendingCard(
-                              name: owner["name"],
-                              time: owner["time"] ?? "",
-                              wa: owner["wa"] ?? "-",
-                              email: owner["email"] ?? "-",
-                              lokasi: owner["lokasi"] ?? "-",
-                              rencana: owner.containsKey("rencana") ? owner["rencana"].toString() : "-",
-                            );
-                          } else {
-                            return OwnerCard(
-                              name: owner["name"],
-                              cabang: owner["cabang"],
-                            );
-                          }
-                        },
-                      ),
+                child: FutureBuilder<List<dynamic>?>(
+                  future: apiService.getOwners(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    // Menggabungkan Data Real API dan Data Dummy
+                    List<dynamic> apiData = snapshot.data ?? [];
+                    List<dynamic> combinedData = [...apiData, ...dummyOwners];
+
+                    // Logika Filtering
+                    List<dynamic> filtered = combinedData.where((owner) {
+                      final name = (owner["name"] ?? "").toString().toLowerCase();
+                      final matchesSearch = name.contains(searchQuery.toLowerCase());
+                      
+                      bool matchesTab;
+                      if (activeTab == "Semua") {
+                        matchesTab = (owner["status"] == "active");
+                      } else {
+                        matchesTab = (owner["status"] == "pending");
+                      }
+                      return matchesSearch && matchesTab;
+                    }).toList();
+
+                    if (filtered.isEmpty) {
+                      return const Center(
+                        child: Text("Data tidak ditemukan", style: TextStyle(color: Colors.grey)),
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        final owner = filtered[index];
+                        
+                        if (owner["status"] == "pending") {
+                          return PendingCard(
+                            name: (owner["name"] ?? "Tanpa Nama").toString(),
+                            time: (owner["time"] ?? "Baru saja").toString(),
+                            wa: (owner["wa"] ?? "-").toString(),
+                            email: (owner["email"] ?? "-").toString(),
+                            lokasi: (owner["lokasi"] ?? "-").toString(),
+                            rencana: (owner["rencana"] ?? "1").toString(),
+                          );
+                        } else {
+                          return OwnerCard(
+                            name: (owner["name"] ?? "Tanpa Nama").toString(),
+                            cabang: int.tryParse(owner["cabang"].toString()) ?? 1,
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),
@@ -128,13 +143,15 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
     );
   }
 
+  // --- Widget Helper ---
 
   Widget _buildTabButton(String label) {
     bool isActive = activeTab == label;
     return GestureDetector(
       onTap: () {
-        activeTab = label;
-        _applyFilter();
+        setState(() {
+          activeTab = label;
+        });
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -196,7 +213,7 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
   }
 }
 
-
+// --- Widget PendingCard ---
 class PendingCard extends StatelessWidget {
   final String name;
   final String time;
@@ -262,10 +279,10 @@ class PendingCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          Text("WhatsApp: $wa"),
-          Text("Email: $email"),
-          Text("Lokasi: $lokasi"),
-          Text("Rencana Cabang: $rencana"),
+          Text("WhatsApp: $wa", style: const TextStyle(fontSize: 13)),
+          Text("Email: $email", style: const TextStyle(fontSize: 13)),
+          Text("Lokasi: $lokasi", style: const TextStyle(fontSize: 13)),
+          Text("Rencana Cabang: $rencana", style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -288,7 +305,7 @@ class PendingCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Center(
-          child: Text(label, style: const TextStyle(color: Colors.white)),
+          child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),
       ),
     );

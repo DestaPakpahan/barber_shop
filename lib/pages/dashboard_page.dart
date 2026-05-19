@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import '../widgets/stat_card.dart';
+
+// Pages
 import 'owner_all_page.dart';
 import 'daftar_cabang.dart';
 import 'total_transaksi.dart';
 import 'notifikasi.dart';
+
+// Screens
+import '../screens/wallet_screen.dart';
+import '../screens/profil_screen.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -12,6 +18,8 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // 🔥 BOTTOM NAVIGATION
       bottomNavigationBar: Container(
         height: 65,
         decoration: const BoxDecoration(
@@ -21,7 +29,10 @@ class DashboardPage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+            // HOME (aktif)
             const Icon(Icons.home, color: Color(0xFFFEB800)),
+
+            // OWNER
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -33,11 +44,36 @@ class DashboardPage extends StatelessWidget {
               },
               child: const Icon(Icons.people, color: Colors.white),
             ),
-            const Icon(Icons.folder, color: Colors.white),
-            const Icon(Icons.person, color: Colors.white),
+
+            // WALLET 🔥
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const WalletScreen(),
+                  ),
+                );
+              },
+              child: const Icon(Icons.account_balance_wallet, color: Colors.white),
+            ),
+
+            // PROFIL 🔥
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ProfilScreen(),
+                  ),
+                );
+              },
+              child: const Icon(Icons.person, color: Colors.white),
+            ),
           ],
         ),
       ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -45,7 +81,7 @@ class DashboardPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // NOTIF
+                // 🔔 NOTIF
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -113,7 +149,6 @@ class DashboardPage extends StatelessWidget {
 
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  clipBehavior: Clip.none,
                   child: Row(
                     children: [
                       _buildStatCardWrapper(
@@ -153,7 +188,7 @@ class DashboardPage extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // FINANCIAL MONITORING
+                // FINANCIAL
                 const Text(
                   "Financial Monitoring",
                   style: TextStyle(
@@ -162,6 +197,7 @@ class DashboardPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
+
                 Row(
                   children: [
                     _financialBox("Rp45.000.000", "Total Deposit Owner"),
@@ -172,7 +208,7 @@ class DashboardPage extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // AKTIVITAS SALDO
+                // AKTIVITAS
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(15),
@@ -199,54 +235,17 @@ class DashboardPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _activityItem("Top-up Berhasil Siti Nur Holifa +Rp1.000.000 (17:30 WIB)"),
+                            _activityItem("Top-up Berhasil Siti +Rp1.000.000"),
                             _divider(),
-                            _activityItem("Top-up Berhasil Desta Pakpahan +Rp500.000 (15.00)"),
+                            _activityItem("Top-up Desta +Rp500.000"),
                             _divider(),
-                            _activityItem("Saldo Kritis Fikriawan — Sisa Rp12.000 (Sistem sudah mengirim pengingat)"),
-                            _divider(),
-                            _activityItem("Top-up Berhasil Sheila Putri +Rp5.000.000 (09.40)"),
+                            _activityItem("Saldo Kritis Fikriawan"),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 25),
-
-                // SECTION: OWNER PERLU TOP-UP
-                const Text(
-                  "Owner Perlu Top-Up",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF002583),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFEBEB),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.red.shade100),
-                  ),
-                  child: Column(
-                    children: [
-                      _ownerCriticalItem("Fikriawan", "Rp80.000", "Potong Boss"),
-                      _dividerRed(),
-                      _ownerCriticalItem("Baskara Putra", "Rp78.000", "Bass Cuts"),
-                      _dividerRed(),
-                      _ownerCriticalItem("Madukina", "Rp60.000", "Pangkas Jogja"),
-                      _dividerRed(),
-                      _ownerCriticalItem("Clarissa", "Rp74.000", "Sudut Barber"),
-                      _dividerRed(),
-                      _ownerCriticalItem("Adrian Mahendra", "Rp92.000", "Barber Yuk"),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -303,32 +302,5 @@ class DashboardPage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 4),
       color: const Color(0xFFFEB800),
     );
-  }
-
-  Widget _ownerCriticalItem(String name, String balance, String shop) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(name, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFD32F2F), fontSize: 13)),
-              Text(shop, style: const TextStyle(color: Colors.black54, fontSize: 11)),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
-            child: Text(balance, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _dividerRed() {
-    return Divider(color: Colors.red.shade100, thickness: 1, height: 1);
   }
 }
