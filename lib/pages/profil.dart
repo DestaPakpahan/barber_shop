@@ -6,10 +6,10 @@ import '../pages/owner_all_page.dart';
 import '../pages/load_page.dart';
 
 // Screens
-import 'wallet_screen.dart';
-import 'edit_profil_screen.dart';
-import 'password_screen.dart';
-import 'system_fee_screen.dart';
+import 'wallet.dart';
+import 'edit_profil.dart';
+import 'password.dart';
+import 'system_fee.dart';
 
 class AppColors {
   static const Color primaryNavy = Color(0xFF002583);
@@ -17,8 +17,8 @@ class AppColors {
   static const Color accentYellow = Color(0xFFFEB800);
 }
 
-class ProfilScreen extends StatelessWidget {
-  const ProfilScreen({super.key});
+class Profil extends StatelessWidget {
+  const Profil({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -100,14 +100,14 @@ class ProfilScreen extends StatelessWidget {
             _buildMenuItem('Edit Profil', onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const EditProfilScreen()),
+                MaterialPageRoute(builder: (_) => const EditProfil()),
               );
             }),
 
             _buildMenuItem('Ubah Kata Sandi', onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const PasswordScreen()),
+                MaterialPageRoute(builder: (_) => const Password()),
               );
             }),
 
@@ -119,7 +119,7 @@ class ProfilScreen extends StatelessWidget {
             _buildMenuItem('Sistem Fee per Transaksi', onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SystemFeeScreen()),
+                MaterialPageRoute(builder: (_) => const SystemFee()),
               );
             }),
 
@@ -185,7 +185,7 @@ class ProfilScreen extends StatelessWidget {
           } else if (index == 2) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const WalletScreen()),
+              MaterialPageRoute(builder: (_) => const Wallet()),
             );
           }
         },

@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:baber/services/api_service.dart'; // Pastikan path sesuai
 import '../widgets/owner_card.dart'; // Pastikan path sesuai
+import 'dashboard_page.dart'; 
+import 'wallet.dart'; 
+import 'profil.dart'; 
+
+// Struktur warna pembantu agar AppColors tidak eror
+class AppColors {
+  static const Color primaryNavy = Color(0xFF002583);
+  static const Color cardGrey = Color(0xFFE5E8EF); 
+  static const Color accentYellow = Color(0xFFFEB800);
+}
 
 class OwnerAllPage extends StatefulWidget {
   const OwnerAllPage({super.key});
@@ -12,29 +22,61 @@ class OwnerAllPage extends StatefulWidget {
 class _OwnerAllPageState extends State<OwnerAllPage> {
   String activeTab = "Semua";
   String searchQuery = "";
+  int _currentIndex = 1; // FIX 1: Ditambahkan agar default aktif di menu Owners (Index 1)
   final ApiService apiService = ApiService();
-
-  // Data Dummy untuk fallback jika API kosong atau offline
-  final List<Map<String, dynamic>> dummyOwners = [
-    {"name": "Desta Pakpahan", "cabang": 2, "status": "active"},
-    {"name": "Siti Nur Holifa", "cabang": 1, "status": "active"},
-    {
-      "name": "Ahmad Zaki - Gentleman Cut",
-      "status": "pending",
-      "time": "2 hours ago",
-      "wa": "0812-3456-7891",
-      "email": "Zaki@gmail.com",
-      "lokasi": "Condongcatur, Sleman",
-      "rencana": 1
-    },
-    {"name": "Sheila Putri", "cabang": 3, "status": "active"},
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: _buildBottomNav(),
+      
+      // FIX 2: Menaruh bottomNavigationBar bawaan scaffold di tempat yang benar
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: AppColors.cardGrey, width: 1)),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+
+            // Logika navigasi berdasarkan index menu yang dipilih
+            switch (index) {
+              case 0:
+                // Kembali ke halaman utama/dashboard, gunakan pop atau pushReplacement agar tumpukan page bersih
+                Navigator.pop(context);
+                break;
+              case 1:
+                // Kita sudah berada di halaman Owner All, tidak perlu push baru
+                break;
+              case 2:
+                // Menuju halaman Wallet
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Wallet()));
+                break;
+              case 3:
+                // Menuju halaman Profil
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Profil()));
+                break;
+            }
+          },
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: AppColors.primaryNavy,
+          unselectedItemColor: Colors.black38,
+          selectedFontSize: 11,
+          unselectedFontSize: 11,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),         // Index 0
+            BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Owners'),       // Index 1
+            BottomNavigationBarItem(icon: Icon(Icons.wallet), label: 'Wallet'),     // Index 2
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),     // Index 3
+          ],
+        ),
+      ),
+      
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -78,7 +120,7 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
 
               const SizedBox(height: 15),
 
-              // LIST DATA (API + DUMMY)
+              // LIST DATA (HANYA DARI API)
               Expanded(
                 child: FutureBuilder<List<dynamic>?>(
                   future: apiService.getOwners(),
@@ -87,12 +129,16 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
                       return const Center(child: CircularProgressIndicator());
                     }
 
-                    // Menggabungkan Data Real API dan Data Dummy
+                    if (snapshot.hasError) {
+                      return const Center(
+                        child: Text("Gagal memuat data dari server", style: TextStyle(color: Colors.red)),
+                      );
+                    }
+
                     List<dynamic> apiData = snapshot.data ?? [];
-                    List<dynamic> combinedData = [...apiData, ...dummyOwners];
 
                     // Logika Filtering
-                    List<dynamic> filtered = combinedData.where((owner) {
+                    List<dynamic> filtered = apiData.where((owner) {
                       final name = (owner["name"] ?? "").toString().toLowerCase();
                       final matchesSearch = name.contains(searchQuery.toLowerCase());
                       
@@ -118,12 +164,16 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
                         
                         if (owner["status"] == "pending") {
                           return PendingCard(
+                            id: (owner["id"] ?? "").toString(), 
                             name: (owner["name"] ?? "Tanpa Nama").toString(),
                             time: (owner["time"] ?? "Baru saja").toString(),
                             wa: (owner["wa"] ?? "-").toString(),
                             email: (owner["email"] ?? "-").toString(),
                             lokasi: (owner["lokasi"] ?? "-").toString(),
                             rencana: (owner["rencana"] ?? "1").toString(),
+                            onRefresh: () {
+                              setState(() {});
+                            },
                           );
                         } else {
                           return OwnerCard(
@@ -189,43 +239,25 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
       ],
     );
   }
-
-  Widget _buildBottomNav() {
-    return Container(
-      height: 65,
-      decoration: const BoxDecoration(
-        color: Color(0xFF2C3E8F),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.home, color: Colors.white),
-          ),
-          const Icon(Icons.people, color: Color(0xFFFEB800)),
-          const Icon(Icons.folder, color: Colors.white),
-          const Icon(Icons.person, color: Colors.white),
-        ],
-      ),
-    );
-  }
 }
 
 // --- Widget PendingCard ---
 class PendingCard extends StatelessWidget {
+  final String id; 
   final String name;
   final String time;
   final String wa;
   final String email;
   final String lokasi;
   final String rencana;
+  final VoidCallback onRefresh; 
 
   const PendingCard({
     super.key, 
+    required this.id,
     required this.name, 
     required this.time,
+    required this.onRefresh,
     this.wa = "-",
     this.email = "-",
     this.lokasi = "-",
@@ -236,6 +268,30 @@ class PendingCard extends StatelessWidget {
     List<String> parts = name.split(" ");
     if (parts.length > 1) return parts[0][0] + parts[1][0];
     return parts[0][0];
+  }
+
+  void _processApproval(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    ApiService apiService = ApiService();
+    bool isSuccess = await apiService.approveOwner(id);
+
+    Navigator.pop(context); 
+
+    if (isSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Owner berhasil disetujui dan diaktifkan!'), backgroundColor: Colors.green),
+      );
+      onRefresh(); 
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal menyetujui owner. Silakan coba lagi.'), backgroundColor: Colors.red),
+      );
+    }
   }
 
   @override
@@ -286,9 +342,19 @@ class PendingCard extends StatelessWidget {
           const SizedBox(height: 10),
           Row(
             children: [
-              _buildActionBtn("Terima", Colors.green),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _processApproval(context),
+                  child: _buildActionBtn("Terima", Colors.green),
+                ),
+              ),
               const SizedBox(width: 10),
-              _buildActionBtn("Tolak", Colors.red),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {},
+                  child: _buildActionBtn("Tolak", Colors.red),
+                ),
+              ),
             ],
           ),
         ],
@@ -297,16 +363,14 @@ class PendingCard extends StatelessWidget {
   }
 
   Widget _buildActionBtn(String label, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
-          child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        ),
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Center(
+        child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }

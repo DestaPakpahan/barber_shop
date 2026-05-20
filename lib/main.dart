@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'pages/load_page.dart';
 
 // Screens
-import 'screens/wallet_screen.dart';
-import 'screens/tarik_saldo_screen.dart';
-import 'screens/riwayat_screen.dart';
-import 'screens/profil_screen.dart';
-import 'screens/edit_profil_screen.dart';
-import 'screens/password_screen.dart';
-import 'screens/system_fee_screen.dart';
+import 'pages/wallet.dart';
+import 'pages/tarik_saldo.dart';
+import 'pages/riwayat.dart';
+import 'pages/profil.dart';
+import 'pages/edit_profil.dart';
+import 'pages/password.dart';
+import 'pages/system_fee.dart';
 
 void main() {
   runApp(const BaberApp());
@@ -43,13 +43,13 @@ class BaberApp extends StatelessWidget {
       home: const LoadPage(),
 
       routes: {
-        '/wallet': (context) => const WalletScreen(),
-        '/tarik-saldo': (context) => const TarikSaldoScreen(),
-        '/riwayat': (context) => const RiwayatScreen(),
-        '/profil': (context) => const ProfilScreen(),
-        '/edit-profil': (context) => const EditProfilScreen(),
-        '/ubah-password': (context) => const PasswordScreen(),
-        '/system-fee': (context) => const SystemFeeScreen(),
+        '/wallet': (context) => const Wallet(),
+        '/tarik-saldo': (context) => const TarikSaldo(),
+        '/riwayat': (context) => const Riwayat(),
+        '/profil': (context) => const Profil(),
+        '/edit-profil': (context) => const EditProfil(),
+        '/ubah-password': (context) => const Password(),
+        '/system-fee': (context) => const SystemFee(),
       },
     );
   }

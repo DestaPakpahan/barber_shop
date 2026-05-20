@@ -7,14 +7,14 @@ class AppColors {
   static const Color accentYellow = Color(0xFFFEB800);
 }
 
-class PasswordScreen extends StatefulWidget {
-  const PasswordScreen({super.key});
+class Password extends StatefulWidget {
+  const Password({super.key});
 
   @override
-  State<PasswordScreen> createState() => _PasswordScreenState();
+  State<Password> createState() => _PasswordState();
 }
 
-class _PasswordScreenState extends State<PasswordScreen> {
+class _PasswordState extends State<Password> {
   final TextEditingController _passController = TextEditingController();
   final TextEditingController _confirmPassController = TextEditingController();
 

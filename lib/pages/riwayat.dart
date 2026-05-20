@@ -7,8 +7,8 @@ class AppColors {
   static const Color accentYellow = Color(0xFFFEB800);
 }
 
-class RiwayatScreen extends StatelessWidget {
-  const RiwayatScreen({super.key});
+class Riwayat extends StatelessWidget {
+  const Riwayat({super.key});
 
   @override
   Widget build(BuildContext context) {

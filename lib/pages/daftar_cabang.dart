@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:baber/services/api_service.dart'; 
 import '../widgets/cabang_card.dart'; 
 
-class DaftarCabangPage extends StatelessWidget {
+class DaftarCabangPage extends StatefulWidget {
+  const DaftarCabangPage({super.key});
 
-  const DaftarCabangPage({
-    super.key,
-  });
+  @override
+  State<DaftarCabangPage> createState() => _DaftarCabangPageState();
+}
+
+class _DaftarCabangPageState extends State<DaftarCabangPage> {
+  String searchQuery = "";
+  final ApiService apiService = ApiService(); 
+  
+  // 1. Deklarasikan variabel penampung Future di sini
+  late Future<List<dynamic>?> _branchesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // 2. Tarik data dari database HANYA SEKALI saat halaman dimuat
+    _branchesFuture = apiService.getBranches();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +49,20 @@ class DaftarCabangPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value; // Sekarang setState aman, tidak akan reload API
+                });
+              },
               decoration: InputDecoration(
                 hintText: 'Cari Nama Cabang',
                 suffixIcon: const Icon(Icons.search),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                border: OutlineInputBorder(
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: const BorderSide(color: Color(0xFF1A367C)),
+                ),
+                focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: const BorderSide(color: Color(0xFF1A367C)),
                 ),
@@ -47,100 +72,58 @@ class DaftarCabangPage extends StatelessWidget {
           
           // List Cabang
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: const [
-                CabangCard(
-                  name: 'Barber King',
-                  address: 'Sendangadi, Kab. Sleman',
-                  logoPath: 'https://via.placeholder.com/150',
-                ),
-                CabangCard(
-                  name: 'Barber King',
-                  address: 'Jl. Taman Siswa, Wirogunan, Yogyakarta',
-                  logoPath: 'https://via.placeholder.com/150',
-                ),
-                CabangCard(
-                  name: 'Urban Cut',
-                  address: 'Jl. Letjen S. Parman, Banjarsari',
-                  logoPath: 'https://via.placeholder.com/150',
-                ),
-                  CabangCard(
-                    name: 'Urban Cut',
-                    address: 'Jl. Affandi, Condongcatur, Kec. Depok, Kabupaten Sleman',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'The Gentle Cut',
-                    address: 'Rejowinangun Selatan, Kec. Magelang Selatan',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'The Gentle Cut',
-                    address: 'Sabrangs, Gunungpring, Kec. Muntilan',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Bass Cuts',
-                    address: 'Jl. Gandekan, Sosromenduran, Gedong Tengen, Kota Yogyakarta',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Bass Cuts',
-                    address: 'Jl. Parangtritis, Brontokusuman, Mergangsan, Kota Yogyakarta',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Barberin',
-                    address: 'Jl. Madukoro Raya, Kec. Semarang Barat',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Potong Boss',
-                    address: 'Krikil, Walitelon Selatan, Kec. Sidorejo',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Gentleman Room',
-                    address: 'Sabrangs, Gunungpring, Kec. Muntilan',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Gentelman Room',
-                    address: 'Sendangadi, Kab. Sleman',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Pangkas Kita', 
-                    address: 'Jl. Taman Siswa, Wirogunan, Yogyakarta',
-                    logoPath: 'https://via.placeholder.com/150'
-                  ),
-                  CabangCard(
-                    name: 'Barber Yuk',
-                    address: 'Jl. Letjen S. Parman, Banjarsari',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Pangkas Nusantara',
-                    address: 'Jl. Affandi, Condongcatur, Kec. Depok, Kabupaten Sleman',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Pangkas Jogja',
-                    address: 'Rejowinangun Selatan, Kec. Magelang Selatan',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Sudut Barber',
-                    address: 'Sabrangs, Gunungpring, Kec. Muntilan',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                  CabangCard(
-                    name: 'Sudut Barber',
-                    address: 'Jl. Gandekan, Sosromenduran, Gedong Tengen, Kota Yogyakarta',
-                    logoPath: 'https://via.placeholder.com/150',
-                  ),
-                ],
+            child: FutureBuilder<List<dynamic>?>(
+              // 3. Panggil variabel penampung, BUKAN memanggil fungsi API langsung
+              future: _branchesFuture, 
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1A367C)),
+                    ),
+                  );
+                }
+
+                if (snapshot.hasError || snapshot.data == null) {
+                  return const Center(
+                    child: Text(
+                      "Gagal memuat data cabang dari database", 
+                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                    ),
+                  );
+                }
+
+                List<dynamic> branchData = snapshot.data ?? [];
+
+                // Filter data berdasarkan search bar secara lokal di aplikasi
+                List<dynamic> filteredBranches = branchData.where((branch) {
+                  final branchName = (branch["name"] ?? "").toString().toLowerCase();
+                  return branchName.contains(searchQuery.toLowerCase());
+                }).toList();
+
+                if (filteredBranches.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      "Cabang tidak ditemukan atau data kosong", 
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: filteredBranches.length,
+                  itemBuilder: (context, index) {
+                    final branch = filteredBranches[index];
+                    
+                    return CabangCard(
+                      name: (branch["name"] ?? "Tanpa Nama").toString(),
+                      address: (branch["address"] ?? "Alamat tidak tersedia").toString(),
+                      logoPath: 'https://via.placeholder.com/150', 
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],

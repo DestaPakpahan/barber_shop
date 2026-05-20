@@ -5,8 +5,8 @@ import '../pages/dashboard_page.dart';
 import '../pages/owner_all_page.dart';
 
 // Screens
-import 'profil_screen.dart';
-import 'tarik_saldo_screen.dart';
+import 'profil.dart';
+import 'tarik_saldo.dart';
 
 class AppColors {
   static const Color primaryNavy = Color(0xFF002583);
@@ -15,8 +15,8 @@ class AppColors {
   static const Color accentYellow = Color(0xFFFEB800);
 }
 
-class WalletScreen extends StatelessWidget {
-  const WalletScreen({super.key});
+class Wallet extends StatelessWidget {
+  const Wallet({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +119,7 @@ class WalletScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const TarikSaldoScreen(),
+                      builder: (_) => const TarikSaldo(),
                     ),
                   );
                 },
@@ -294,7 +294,7 @@ class WalletScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (_) => const ProfilScreen()),
+                    builder: (_) => const Profil()),
               );
             },
             child: const Icon(Icons.person_outline,

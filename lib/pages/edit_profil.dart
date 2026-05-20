@@ -7,14 +7,14 @@ class AppColors {
   static const Color accentYellow = Color(0xFFFEB800);
 }
 
-class EditProfilScreen extends StatefulWidget {
-  const EditProfilScreen({super.key});
+class EditProfil extends StatefulWidget {
+  const EditProfil({super.key});
 
   @override
-  State<EditProfilScreen> createState() => _EditProfilScreenState();
+  State<EditProfil> createState() => _EditProfilState();
 }
 
-class _EditProfilScreenState extends State<EditProfilScreen> {
+class _EditProfilState extends State<EditProfil> {
   late TextEditingController _namaController;
   late TextEditingController _emailController;
   late TextEditingController _whatsappController;

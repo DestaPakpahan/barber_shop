@@ -6,14 +6,14 @@ class AppColors {
   static const Color accentYellow = Color(0xFFFEB800);
 }
 
-class TarikSaldoScreen extends StatefulWidget {
-  const TarikSaldoScreen({super.key});
+class TarikSaldo extends StatefulWidget {
+  const TarikSaldo({super.key});
 
   @override
-  State<TarikSaldoScreen> createState() => _TarikSaldoScreenState();
+  State<TarikSaldo> createState() => _TarikSaldoState();
 }
 
-class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
+class _TarikSaldoState extends State<TarikSaldo> {
   final TextEditingController _nominalController = TextEditingController(text: "1.000.000");
 
   @override
