@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:baber/services/api_service.dart'; // Pastikan path sesuai
 import '../widgets/owner_card.dart'; // Pastikan path sesuai
-import 'dashboard_page.dart'; 
-import 'wallet.dart'; 
-import 'profil.dart'; 
+import 'dashboard_page.dart';
+import 'wallet.dart';
+import 'profil.dart';
 
 // Struktur warna pembantu agar AppColors tidak eror
 class AppColors {
   static const Color primaryNavy = Color(0xFF002583);
-  static const Color cardGrey = Color(0xFFE5E8EF); 
+  static const Color cardGrey = Color(0xFFE5E8EF);
   static const Color accentYellow = Color(0xFFFEB800);
 }
 
@@ -22,14 +22,15 @@ class OwnerAllPage extends StatefulWidget {
 class _OwnerAllPageState extends State<OwnerAllPage> {
   String activeTab = "Semua";
   String searchQuery = "";
-  int _currentIndex = 1; // FIX 1: Ditambahkan agar default aktif di menu Owners (Index 1)
+  int _currentIndex =
+      1; // FIX 1: Ditambahkan agar default aktif di menu Owners (Index 1)
   final ApiService apiService = ApiService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      
+
       // FIX 2: Menaruh bottomNavigationBar bawaan scaffold di tempat yang benar
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
@@ -45,19 +46,30 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
             // Logika navigasi berdasarkan index menu yang dipilih
             switch (index) {
               case 0:
-                // Kembali ke halaman utama/dashboard, gunakan pop atau pushReplacement agar tumpukan page bersih
-                Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DashboardPage(),
+                  ),
+                  (route) => false,
+                );
                 break;
               case 1:
                 // Kita sudah berada di halaman Owner All, tidak perlu push baru
                 break;
               case 2:
                 // Menuju halaman Wallet
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Wallet()));
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Wallet()),
+                );
                 break;
               case 3:
                 // Menuju halaman Profil
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Profil()));
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Profil()),
+                );
                 break;
             }
           },
@@ -69,14 +81,26 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
           unselectedFontSize: 11,
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),         // Index 0
-            BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Owners'),       // Index 1
-            BottomNavigationBarItem(icon: Icon(Icons.wallet), label: 'Wallet'),     // Index 2
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),     // Index 3
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ), // Index 0
+            BottomNavigationBarItem(
+              icon: Icon(Icons.group),
+              label: 'Owners',
+            ), // Index 1
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wallet),
+              label: 'Wallet',
+            ), // Index 2
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profil',
+            ), // Index 3
           ],
         ),
       ),
-      
+
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -84,7 +108,7 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
             children: [
               _buildHeader(),
               const SizedBox(height: 15),
-              
+
               // INPUT PENCARIAN
               TextField(
                 onChanged: (value) {
@@ -106,7 +130,7 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 10),
 
               // TAB FILTER
@@ -131,7 +155,10 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
 
                     if (snapshot.hasError) {
                       return const Center(
-                        child: Text("Gagal memuat data dari server", style: TextStyle(color: Colors.red)),
+                        child: Text(
+                          "Gagal memuat data dari server",
+                          style: TextStyle(color: Colors.red),
+                        ),
                       );
                     }
 
@@ -139,9 +166,13 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
 
                     // Logika Filtering
                     List<dynamic> filtered = apiData.where((owner) {
-                      final name = (owner["name"] ?? "").toString().toLowerCase();
-                      final matchesSearch = name.contains(searchQuery.toLowerCase());
-                      
+                      final name = (owner["name"] ?? "")
+                          .toString()
+                          .toLowerCase();
+                      final matchesSearch = name.contains(
+                        searchQuery.toLowerCase(),
+                      );
+
                       bool matchesTab;
                       if (activeTab == "Semua") {
                         matchesTab = (owner["status"] == "active");
@@ -153,7 +184,10 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
 
                     if (filtered.isEmpty) {
                       return const Center(
-                        child: Text("Data tidak ditemukan", style: TextStyle(color: Colors.grey)),
+                        child: Text(
+                          "Data tidak ditemukan",
+                          style: TextStyle(color: Colors.grey),
+                        ),
                       );
                     }
 
@@ -161,10 +195,10 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
                       itemCount: filtered.length,
                       itemBuilder: (context, index) {
                         final owner = filtered[index];
-                        
+
                         if (owner["status"] == "pending") {
                           return PendingCard(
-                            id: (owner["id"] ?? "").toString(), 
+                            id: (owner["id"] ?? "").toString(),
                             name: (owner["name"] ?? "Tanpa Nama").toString(),
                             time: (owner["time"] ?? "Baru saja").toString(),
                             wa: (owner["wa"] ?? "-").toString(),
@@ -178,7 +212,8 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
                         } else {
                           return OwnerCard(
                             name: (owner["name"] ?? "Tanpa Nama").toString(),
-                            cabang: int.tryParse(owner["cabang"].toString()) ?? 1,
+                            cabang:
+                                int.tryParse(owner["cabang"].toString()) ?? 1,
                           );
                         }
                       },
@@ -234,7 +269,11 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
         ),
         const Text(
           "Daftar Owner",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF002583)),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF002583),
+          ),
         ),
       ],
     );
@@ -243,19 +282,19 @@ class _OwnerAllPageState extends State<OwnerAllPage> {
 
 // --- Widget PendingCard ---
 class PendingCard extends StatelessWidget {
-  final String id; 
+  final String id;
   final String name;
   final String time;
   final String wa;
   final String email;
   final String lokasi;
   final String rencana;
-  final VoidCallback onRefresh; 
+  final VoidCallback onRefresh;
 
   const PendingCard({
-    super.key, 
+    super.key,
     required this.id,
-    required this.name, 
+    required this.name,
     required this.time,
     required this.onRefresh,
     this.wa = "-",
@@ -280,16 +319,22 @@ class PendingCard extends StatelessWidget {
     ApiService apiService = ApiService();
     bool isSuccess = await apiService.approveOwner(id);
 
-    Navigator.pop(context); 
+    Navigator.pop(context);
 
     if (isSuccess) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Owner berhasil disetujui dan diaktifkan!'), backgroundColor: Colors.green),
+        const SnackBar(
+          content: Text('Owner berhasil disetujui dan diaktifkan!'),
+          backgroundColor: Colors.green,
+        ),
       );
-      onRefresh(); 
+      onRefresh();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gagal menyetujui owner. Silakan coba lagi.'), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text('Gagal menyetujui owner. Silakan coba lagi.'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -313,7 +358,10 @@ class PendingCard extends StatelessWidget {
                 backgroundColor: const Color(0xFF002583),
                 child: Text(
                   getInitials(name),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -323,11 +371,19 @@ class PendingCard extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black,
+                      ),
                     ),
                     Text(
                       time,
-                      style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.grey),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey,
+                      ),
                     ),
                   ],
                 ),
@@ -338,7 +394,10 @@ class PendingCard extends StatelessWidget {
           Text("WhatsApp: $wa", style: const TextStyle(fontSize: 13)),
           Text("Email: $email", style: const TextStyle(fontSize: 13)),
           Text("Lokasi: $lokasi", style: const TextStyle(fontSize: 13)),
-          Text("Rencana Cabang: $rencana", style: const TextStyle(fontSize: 13)),
+          Text(
+            "Rencana Cabang: $rencana",
+            style: const TextStyle(fontSize: 13),
+          ),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -370,7 +429,13 @@ class PendingCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(
-        child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }

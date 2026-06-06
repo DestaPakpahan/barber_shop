@@ -58,7 +58,6 @@ class _TopUpSaldoState extends State<TopUpSaldo> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            // 🔥 CARD INFO
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -120,7 +119,6 @@ class _TopUpSaldoState extends State<TopUpSaldo> {
 
             const SizedBox(height: 28),
 
-            // 🔥 INPUT NOMINAL
             const Text(
               'Nominal Top Up',
               style: TextStyle(
@@ -154,7 +152,6 @@ class _TopUpSaldoState extends State<TopUpSaldo> {
 
             const SizedBox(height: 26),
 
-            // 🔥 QUICK NOMINAL
             const Text(
               'Pilih Cepat',
               style: TextStyle(
@@ -180,7 +177,6 @@ class _TopUpSaldoState extends State<TopUpSaldo> {
 
             const SizedBox(height: 30),
 
-            // 🔥 PAYMENT METHOD
             const Text(
               'Metode Pembayaran',
               style: TextStyle(
@@ -212,7 +208,6 @@ class _TopUpSaldoState extends State<TopUpSaldo> {
 
             const SizedBox(height: 40),
 
-            // 🔥 BUTTON
             SizedBox(
               width: double.infinity,
 
@@ -283,7 +278,6 @@ class _TopUpSaldoState extends State<TopUpSaldo> {
     );
   }
 
-  // 🔥 INFO CARD
   Widget _infoCard({
     required String title,
     required String value,
@@ -324,7 +318,6 @@ class _TopUpSaldoState extends State<TopUpSaldo> {
     );
   }
 
-  // 🔥 QUICK BUTTON
   Widget _quickButton(String nominal) {
 
     return GestureDetector(
@@ -362,7 +355,6 @@ class _TopUpSaldoState extends State<TopUpSaldo> {
     );
   }
 
-  // 🔥 PAYMENT METHOD
   Widget _paymentMethod({
     required String title,
     required IconData icon,
@@ -424,7 +416,6 @@ class _TopUpSaldoState extends State<TopUpSaldo> {
     );
   }
 
-  // 🔥 FORMAT NOMINAL
   String _formatNominal(String number) {
 
     return number.replaceAllMapped(

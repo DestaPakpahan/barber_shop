@@ -73,8 +73,12 @@ class _DashboardPageState extends State<DashboardPage> {
                         'Rp 16.000.000',
                         style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(width: 8),                      
+                      const SizedBox(width: 8), 
+                                           
                     ],
+
+
+
                   ),
                 ],
               ),

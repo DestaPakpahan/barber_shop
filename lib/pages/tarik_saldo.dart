@@ -14,7 +14,9 @@ class TarikSaldo extends StatefulWidget {
 }
 
 class _TarikSaldoState extends State<TarikSaldo> {
-  final TextEditingController _nominalController = TextEditingController(text: "1.000.000");
+  final TextEditingController _nominalController = TextEditingController(
+    text: "1.000.000",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,11 @@ class _TarikSaldoState extends State<TarikSaldo> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 10),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 24),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+              size: 24,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -47,18 +53,18 @@ class _TarikSaldoState extends State<TarikSaldo> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 30),
-            
+
             // Label Rekening Tujuan
             const Text(
               'Rekening Tujuan',
               style: TextStyle(
-                fontWeight: FontWeight.bold, 
+                fontWeight: FontWeight.bold,
                 fontSize: 13,
                 color: Colors.black,
               ),
             ),
             const SizedBox(height: 8),
-            
+
             // Kartu Informasi Rekening dengan Ikon Dropdown
             Container(
               width: double.infinity,
@@ -76,7 +82,7 @@ class _TarikSaldoState extends State<TarikSaldo> {
                       Text(
                         'Shella Putri',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold, 
+                          fontWeight: FontWeight.bold,
                           fontSize: 14,
                           color: Colors.black,
                         ),
@@ -84,10 +90,7 @@ class _TarikSaldoState extends State<TarikSaldo> {
                       SizedBox(height: 4),
                       Text(
                         'BCA: 12345678910111213',
-                        style: TextStyle(
-                          color: Colors.black54, 
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.black54, fontSize: 12),
                       ),
                     ],
                   ),
@@ -102,13 +105,13 @@ class _TarikSaldoState extends State<TarikSaldo> {
             const Text(
               'Nominal Penarikan',
               style: TextStyle(
-                fontWeight: FontWeight.bold, 
+                fontWeight: FontWeight.bold,
                 fontSize: 13,
                 color: Colors.black,
               ),
             ),
             const SizedBox(height: 8),
-            
+
             // Input Nominal
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -135,14 +138,11 @@ class _TarikSaldoState extends State<TarikSaldo> {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             // Saldo Tersedia
             const Text(
               'Saldo Tersedia: Rp 12.450.000',
-              style: TextStyle(
-                color: Colors.black38, 
-                fontSize: 11,
-              ),
+              style: TextStyle(color: Colors.black38, fontSize: 11),
             ),
 
             const Spacer(),
@@ -152,7 +152,15 @@ class _TarikSaldoState extends State<TarikSaldo> {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+  final nominal = int.parse(
+    _nominalController.text.replaceAll('.', '').trim(),
+  );
+
+  print("Nominal ditarik: $nominal");
+
+  Navigator.pop(context, nominal);
+},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accentYellow,
                   elevation: 0,

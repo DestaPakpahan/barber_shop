@@ -32,7 +32,6 @@ class TopupRequestPage extends StatelessWidget {
 
         children: [
 
-          // 🔥 REQUEST 1
           _requestCard(
             context,
             ownerName: 'Owner Toko A',
@@ -42,7 +41,6 @@ class TopupRequestPage extends StatelessWidget {
 
           const SizedBox(height: 14),
 
-          // 🔥 REQUEST 2
           _requestCard(
             context,
             ownerName: 'Owner Toko B',
@@ -52,7 +50,6 @@ class TopupRequestPage extends StatelessWidget {
 
           const SizedBox(height: 14),
 
-          // 🔥 REQUEST 3
           _requestCard(
             context,
             ownerName: 'Owner Toko C',
@@ -64,7 +61,6 @@ class TopupRequestPage extends StatelessWidget {
     );
   }
 
-  // 🔥 CARD REQUEST
   Widget _requestCard(
     BuildContext context, {
     required String ownerName,
@@ -96,7 +92,6 @@ class TopupRequestPage extends StatelessWidget {
         child: Row(
           children: [
 
-            // 🔥 ICON
             Container(
               padding: const EdgeInsets.all(12),
 
@@ -113,7 +108,6 @@ class TopupRequestPage extends StatelessWidget {
 
             const SizedBox(width: 14),
 
-            // 🔥 TEXT
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,7 +134,6 @@ class TopupRequestPage extends StatelessWidget {
               ),
             ),
 
-            // 🔥 STATUS
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: 12,
@@ -167,7 +160,6 @@ class TopupRequestPage extends StatelessWidget {
     );
   }
 
-  // 🔥 STATUS COLOR
   Color _statusColor(String status) {
     switch (status) {
 

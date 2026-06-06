@@ -15,9 +15,8 @@ class TotalTransaksiPage extends StatefulWidget {
 
 class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
   final ApiService apiService = ApiService(); 
-  int _currentIndex = 0; // 🌟 Ditambahkan agar BottomNavigationBar tidak error
+  int _currentIndex = 0; 
 
-  // Helper: Format string desimal ke Rupiah (e.g., 2000.00 -> Rp 2.000)
   String formatRupiah(dynamic amount) {
     if (amount == null) return "Rp 0";
     final number = double.tryParse(amount.toString()) ?? 0.0;

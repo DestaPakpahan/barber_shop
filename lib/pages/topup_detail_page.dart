@@ -36,8 +36,6 @@ class TopupDetailPage extends StatelessWidget {
 
         child: Column(
           children: [
-
-            // 🔥 CARD DETAIL
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -127,7 +125,7 @@ class TopupDetailPage extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  // 🔥 BUTTON SETUJUI
+                
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -164,7 +162,6 @@ class TopupDetailPage extends StatelessWidget {
 
                   const SizedBox(height: 12),
 
-                  // 🔥 BUTTON TOLAK
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(

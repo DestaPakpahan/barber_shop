@@ -189,8 +189,6 @@ class ApiService {
         return null;
       }
 
-      // Gunakan baseUrl yang konsisten di atas + sesuaikan endpoint backend-mu
-      // Pastikan di Laravel routes/api.php jalurnya adalah /branches atau /developer/branches
       final response = await http.get(
         Uri.parse('$baseUrl/branches'), 
         headers: {
@@ -225,14 +223,13 @@ class ApiService {
   Future<List<dynamic>?> getTransactions() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token'); // 🌟 SEKARANG DINAMIS: Mengambil token asli hasil login
+      final token = prefs.getString('token'); 
 
       if (token == null) {
         print("Token kosong! Gagal mengambil transaksi karena belum login.");
         return null;
       }
       
-      // 🌟 KUNCI UTAMA: Gunakan endpoint developer agar tidak terkena error 404
       final url = Uri.parse('$baseUrl/developer/transactions'); 
 
       // Tambahkan print ini untuk memastikan URL & Token yang dikirim ke debug console
