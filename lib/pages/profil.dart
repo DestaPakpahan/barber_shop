@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
-
-// Pages
-import '../pages/dashboard_page.dart';
-import '../pages/owner_all_page.dart';
-import '../pages/load_page.dart';
-
-// Screens
-import 'wallet.dart';
+import 'load_page.dart';
 import 'edit_profil.dart';
 import 'password.dart';
-import 'system_fee.dart';
+// import 'settings.dart';
 
 class AppColors {
   static const Color primaryNavy = Color(0xFF002583);
@@ -24,7 +17,6 @@ class Profil extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -34,174 +26,64 @@ class Profil extends StatelessWidget {
         ),
         title: const Text(
           'Profil',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
-
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 42,
-                    backgroundColor: const Color(0xFF8DA8FF),
-                    child: const Text(
-                      'DN',
-                      style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Dian Nugraheni',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primaryNavy,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Senior Developer & Founder',
-                        style: TextStyle(fontSize: 13, color: Colors.black54),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
+            _buildHeader(),
             const SizedBox(height: 45),
-
             _buildSectionTitle('Akun & Keamanan'),
-
             _buildMenuItem(
               'Edit Profil',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EditProfil()),
-                );
-              },
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfil())),
             ),
-
             _buildMenuItem(
               'Ubah Kata Sandi',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const Password()),
-                );
-              },
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Password())),
             ),
-
             const SizedBox(height: 25),
-
-            _buildSectionTitle('Konfigurasi SaaS'),
-
-            _buildMenuItem(
-              'Sistem Fee per Transaksi',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SystemFee()),
-                );
-              },
-            ),
-
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 15),
-              child: Text(
-                'Versi Aplikasi v2.1.0',
-                style: TextStyle(color: Colors.black26, fontSize: 12),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
             Center(
               child: TextButton.icon(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoadPage()),
-                    (route) => false,
-                  );
-                },
-                icon: const Icon(Icons.logout, color: Colors.red),
-                label: const Text(
-                  'Logout',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                onPressed: () => Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoadPage()),
+                  (route) => false,
                 ),
+                icon: const Icon(Icons.logout, color: Colors.red),
+                label: const Text('Logout', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
-
             const SizedBox(height: 40),
           ],
         ),
       ),
+    );
+  }
 
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.cardGrey, width: 1)),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: 3,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: AppColors.primaryNavy,
-          unselectedItemColor: Colors.black38,
-          selectedFontSize: 11,
-          unselectedFontSize: 11,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-
-          onTap: (index) {
-            if (index == 0) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const DashboardPage()),
-              );
-            } else if (index == 1) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const OwnerAllPage()),
-              );
-            } else if (index == 2) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const Wallet()),
-              );
-            }
-          },
-
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Owners'),
-            BottomNavigationBarItem(icon: Icon(Icons.wallet), label: 'Wallet'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-          ],
-        ),
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Row(
+        children: [
+          const CircleAvatar(
+            radius: 42,
+            backgroundColor: AppColors.primaryNavy,
+            child: Text('DA', style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+          const SizedBox(width: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text('Developer Admin', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primaryNavy)),
+              SizedBox(height: 4),
+              Text('dev@admin.com', style: TextStyle(fontSize: 13, color: Colors.black54)),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -212,10 +94,7 @@ class Profil extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-          ),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           const SizedBox(height: 4),
           const Divider(),
         ],
@@ -229,10 +108,8 @@ class Profil extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.black12)),
-        ),
-        child: Text(title),
+        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black12))),
+        child: Text(title, style: const TextStyle(fontSize: 15)),
       ),
     );
   }

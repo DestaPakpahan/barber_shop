@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Palette Warna Konsisten
 class AppColors {
   static const Color primaryNavy = Color(0xFF002583);
   static const Color cardGrey = Color(0xFFE5E8EF); 
@@ -27,20 +26,20 @@ class _EditProfilState extends State<EditProfil> {
     super.initState();
     _namaController = TextEditingController(text: "Dian Nugraheni");
     _emailController = TextEditingController();
-    _whatsappController = TextEditingController();
-    _bankController = TextEditingController();
-    _noRekeningController = TextEditingController();
-    _namaPemilikController = TextEditingController();
+    // _whatsappController = TextEditingController();
+    // _bankController = TextEditingController();
+    // _noRekeningController = TextEditingController();
+    // _namaPemilikController = TextEditingController();
   }
 
   @override
   void dispose() {
     _namaController.dispose();
     _emailController.dispose();
-    _whatsappController.dispose();
-    _bankController.dispose();
-    _noRekeningController.dispose();
-    _namaPemilikController.dispose();
+    // _whatsappController.dispose();
+    // _bankController.dispose();
+    // _noRekeningController.dispose();
+    // _namaPemilikController.dispose();
     super.dispose();
   }
 
@@ -79,9 +78,9 @@ class _EditProfilState extends State<EditProfil> {
                   children: [
                     const CircleAvatar(
                       radius: 45,
-                      backgroundColor: Color(0xFF8DA8FF),
+                      backgroundColor: AppColors.primaryNavy,
                       child: Text(
-                        'DN',
+                        'DA',
                         style: TextStyle(
                           fontSize: 36,
                           color: Colors.white,
@@ -125,18 +124,18 @@ class _EditProfilState extends State<EditProfil> {
               const SizedBox(height: 12),
               _buildInputField('Email', _emailController),
               const SizedBox(height: 12),
-              _buildInputField('WhatsApp', _whatsappController),
+              // _buildInputField('WhatsApp', _whatsappController),
 
               const SizedBox(height: 25),
 
               // Section Rekening
-              _buildSectionTitle('Rekening'),
-              const SizedBox(height: 12),
-              _buildInputField('Nama Bank', _bankController),
-              const SizedBox(height: 12),
-              _buildInputField('No. Rekening', _noRekeningController),
-              const SizedBox(height: 12),
-              _buildInputField('Nama Pemilik Rekening', _namaPemilikController),
+              // _buildSectionTitle('Rekening'),
+              // const SizedBox(height: 12),
+              // _buildInputField('Nama Bank', _bankController),
+              // const SizedBox(height: 12),
+              // _buildInputField('No. Rekening', _noRekeningController),
+              // const SizedBox(height: 12),
+              // _buildInputField('Nama Pemilik Rekening', _namaPemilikController),
 
               const SizedBox(height: 40),
 

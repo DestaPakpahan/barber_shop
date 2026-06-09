@@ -10,7 +10,9 @@ import 'pages/riwayat.dart';
 import 'pages/profil.dart';
 import 'pages/edit_profil.dart';
 import 'pages/password.dart';
-import 'pages/system_fee.dart';
+import 'pages/settings.dart';
+import 'pages/owner_all_page.dart';
+import 'pages/dashboard_page.dart';
 
 void main() {
   runApp(const BaberApp());
@@ -49,7 +51,9 @@ class BaberApp extends StatelessWidget {
         '/profil': (context) => const Profil(),
         '/edit-profil': (context) => const EditProfil(),
         '/ubah-password': (context) => const Password(),
-        '/system-fee': (context) => const SystemFee(),
+        '/settings': (context) => const Settings(),
+        '/owner_all_page': (context) => const OwnerAllPage(),
+        '/dashboard': (context) => const DashboardPage(),
       },
     );
   }

@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+class AppColors {
+  static const Color primaryNavy = Color(0xFF002583);
+  static const Color cardGrey = Color(0xFFEDEFF5);
+  static const Color accentYellow = Color(0xFFFEB800);
+}
+
 class NotifikasiPage extends StatelessWidget {
   const NotifikasiPage({super.key});
 
@@ -8,15 +14,20 @@ class NotifikasiPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+            icon: const Icon(Icons.arrow_back, color: AppColors.primaryNavy),
+            onPressed: () {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              } else {
+                Navigator.pushReplacementNamed(context, '/dashboard');
+              }
+            },
+          ),
         title: const Text(
           "Notifikasi",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: AppColors.primaryNavy, fontWeight: FontWeight.bold),
         ),
         centerTitle: false,
       ),

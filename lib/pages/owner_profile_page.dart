@@ -1,258 +1,232 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'detail_cabang.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OwnerProfilePage extends StatefulWidget {
-  final String name;
+  final Map<String, dynamic> ownerData;
+  final VoidCallback onBackToList;
 
-  const OwnerProfilePage({super.key, required this.name});
+  const OwnerProfilePage({
+    super.key, 
+    required this.ownerData, 
+    required this.onBackToList
+  });
 
   @override
   State<OwnerProfilePage> createState() => _OwnerProfilePageState();
 }
 
-class _OwnerProfilePageState extends State<OwnerProfilePage> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _OwnerProfilePageState extends State<OwnerProfilePage> {
+  
+  // Fungsi mengambil inisial nama yang aman dari error index out of range
+  String getInitials(String? name) {
+    if (name == null || name.trim().isEmpty) {
+      return "?";
+    }
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      setState(() {}); // Update warna tombol saat tab digeser
-    });
+    List<String> parts = name.trim().split(" ")..removeWhere((e) => e.trim().isEmpty);
+    if (parts.isEmpty) return "?";
+
+    if (parts.length > 1) {
+      String firstInitial = parts[0].isNotEmpty ? parts[0][0] : "";
+      String secondInitial = parts[1].isNotEmpty ? parts[1][0] : "";
+      return (firstInitial + secondInitial).toUpperCase();
+    }
+    
+    return parts[0].isNotEmpty ? parts[0][0].toUpperCase() : "?";
   }
 
-  String getInitials(String name) {
-    List<String> parts = name.split(" ");
-    if (parts.length > 1) {
-      return parts[0][0] + parts[1][0];
+  // Fungsi helper untuk parsing data cabang secara aman dari berbagai format API
+  List<dynamic> _parseBranches() {
+    final rawBranches = widget.ownerData["branches"];
+    
+    if (rawBranches == null) return [];
+    
+    // Jika formatnya sudah berupa List/Array (Ideal)
+    if (rawBranches is List) {
+      return rawBranches;
     }
-    return parts[0][0];
+    
+    // Jika format dari backend tidak sengaja terkirim berupa String JSON
+    if (rawBranches is String) {
+      try {
+        final parsed = jsonDecode(rawBranches);
+        if (parsed is List) return parsed;
+      } catch (e) {
+        return [];
+      }
+    }
+    
+    return [];
   }
 
   @override
   Widget build(BuildContext context) {
+    // Parsing data dasar owner dengan aman
+    final String ownerName = widget.ownerData["name"]?.toString() ?? "Tanpa Nama";
+    final String ownerEmail = widget.ownerData["email"]?.toString() ?? "-";
+    final String ownerStatus = widget.ownerData["status"]?.toString() ?? "Active";
+    
+    // Mengambil data cabang lewat fungsi proteksi
+    final List<dynamic> daftarCabang = _parseBranches();
+
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
+      // appBar: AppBar(
+      //   title: const Text(
+      //     "Profil Owner", // Ganti dari "Daftar Owner" ke "Profil Owner"
+      //     style: TextStyle(
+      //       color: Color(0xFF002583), 
+      //       fontWeight: FontWeight.bold,
+      //     ),
+      //   ),
+      //   // Jika ingin menampilkan tombol back otomatis, 
+      //   // jangan komentar/hilangkan leading, biarkan default atau set secara eksplisit
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back, color: Color(0xFF002583)),
+      //     onPressed: () => Navigator.pop(context), // Cara termudah kembali ke halaman sebelumnya
+      //   ),
+      // ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. BAGIAN PROFIL & SALDO (STATIS)
-            Padding(
+            // CARD PROFIL UTAMA
+            Container(
               padding: const EdgeInsets.all(20),
-              child: Column(
+              decoration: BoxDecoration(
+                color: const Color(0xFFEBF1FD),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Row(
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.arrow_back),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
                   CircleAvatar(
-                    radius: 45,
+                    radius: 35,
                     backgroundColor: const Color(0xFF002583),
                     child: Text(
-                      getInitials(widget.name),
-                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                      getInitials(ownerName),
+                      style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    widget.name,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF002583)),
-                  ),
-                  const Text("Status Owner: Aktif"),
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFEB800),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text("Hubungi Owner"),
-                  ),
-                  const Divider(height: 30),
-                  Text.rich(
-                    TextSpan(
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const TextSpan(text: "Sisa Saldo: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: "Rp1.250.000", style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          ownerName,
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          "Status: ${ownerStatus.toUpperCase()}",
+                          style: TextStyle(
+                            color: ownerStatus.toLowerCase() == 'active' ? Colors.green : Colors.red,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  const Text("Total Deposit: Rp5.000.000"),
-                  const Text("Total Terpakai: Rp3.750.000"),
                 ],
               ),
             ),
+            const SizedBox(height: 25),
 
-            // 2. TOMBOL TAB (DESAIN ASLI)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () => _tabController.animateTo(0),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: _tabController.index == 0 ? const Color(0xFFFEB800) : Colors.transparent,
-                      border: _tabController.index == 0 ? null : Border.all(color: const Color(0xFF002583)),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text("Penggunaan Saldo"),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () => _tabController.animateTo(1),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: _tabController.index == 1 ? const Color(0xFFFEB800) : Colors.transparent,
-                      border: _tabController.index == 1 ? null : Border.all(color: const Color(0xFF002583)),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text("Riwayat Top-up"),
-                  ),
-                ),
-              ],
+            // DETAIL INFORMASI
+            const Text(
+              "Informasi Kontak",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF002583)),
             ),
-
             const SizedBox(height: 10),
-
-            // 3. BAGIAN TABEL YANG BISA DIGESER
-            SizedBox(
-              height: 150, // Sesuaikan tinggi tabel agar tidak memakan semua ruang
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildTableUsage(),
-                  _buildTableTopup(),
-                ],
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.email, color: Color(0xFF002583)),
+              title: const Text("Email"),
+              subtitle: Text(ownerEmail),
+              trailing: IconButton(
+                icon: const Icon(Icons.open_in_new, color: Color(0xFF002583)),
+                tooltip: "Buka Gmail",
+                onPressed: () async {
+                  final Uri gmailUrl = Uri.parse('https://mail.google.com');
+                  
+                  try {
+                    await launchUrl(
+                      gmailUrl,
+                      mode: LaunchMode.externalApplication,
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Tidak dapat membuka Gmail")),
+                    );
+                  }
+                },
               ),
             ),
+            const Divider(height: 30, thickness: 1),
 
-            const Divider(height: 30),
+            // SEKSI DAFTAR CABANG
+            const Text(
+              "Daftar Cabang Yang Dikelola",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF002583)),
+            ),
+            const SizedBox(height: 12),
 
-            // 4. DAFTAR CABANG (STATIS - TIDAK IKUT GESER)
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            if (daftarCabang.isEmpty)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: const Column(
                   children: [
-                    const Text("Daftar Cabang", style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 10),
-                    Expanded(
-                      child: ListView(
-                        children: [
-                          _cabangCard("Barber King", "Sendangadi, Sleman"),
-                          _cabangCard("Barber King", "Wirogunan"),
-                        ],
-                      ),
+                    Icon(Icons.storefront, color: Colors.grey, size: 40),
+                    SizedBox(height: 8),
+                    Text(
+                      "Belum memiliki cabang yang terdaftar",
+                      style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
+              )
+            else
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: daftarCabang.length,
+                itemBuilder: (context, index) {
+                  final cabang = daftarCabang[index];
+                  final String namaCabang = cabang["name"]?.toString() ?? "Cabang Tanpa Nama";
+                  final String alamatCabang = cabang["address"]?.toString() ?? cabang["location"]?.toString() ?? "Lokasi belum diatur";
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF002583).withOpacity(0.2)),
+                    ),
+                    child: ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Color(0xFF002583),
+                        child: Icon(Icons.store, color: Colors.white),
+                      ),
+                      title: Text(
+                        namaCabang,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(alamatCabang),
+                      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                    ),
+                  );
+                },
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // --- WIDGET HELPER ---
-
-  Widget _buildTableUsage() {
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      children: [
-        _headerRow(["Aktivitas", "Cabang", "Potongan", "Sisa"]),
-        _dataRow(["System Fee", "Sleman", "-Rp2.000", "Rp1.248.000"], isUsage: true),
-        _dataRow(["System Fee", "Wirogunan", "-Rp2.000", "Rp1.250.000"], isUsage: true),
-      ],
-    );
-  }
-
-  Widget _buildTableTopup() {
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      children: [
-        _headerRow(["Tanggal", "Metode", "Nominal", "Status"]),
-        _dataRow(["01 Apr 2026", "Transfer", "+Rp1.000.000", "Berhasil"], isTopup: true),
-        _dataRow(["15 Mar 2026", "Transfer", "+Rp2.000.000", "Berhasil"], isTopup: true),
-      ],
-    );
-  }
-
-  Widget _headerRow(List<String> titles) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey))),
-      child: Row(
-        children: titles.map((t) => Expanded(child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11)))).toList(),
-      ),
-    );
-  }
-
-  Widget _dataRow(List<String> values, {bool isUsage = false, bool isTopup = false}) {
-    return Container(
-      height: 35,
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey, width: 0.5)),
-      ),
-      child: Row(
-        children: values.asMap().entries.map((entry) {
-          int idx = entry.key;
-          String val = entry.value;
-          Color textColor = Colors.black;
-
-          // Logika pewarnaan kolom ke-3 (index 2)
-          if (idx == 2) {
-            if (isUsage) textColor = Colors.red;
-            if (isTopup) textColor = Colors.green;
-          }
-
-          return Expanded(
-            child: Text(
-              val,
-              style: TextStyle(fontSize: 10, color: textColor),
-            ),
-          ); // Penutup Expanded
-        }).toList(), // Penutup map().toList()
-      ), // Penutup Row
-    ); // Penutup Container
-  }
-
-  Widget _cabangCard(String name, String lokasi) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => CabangDetailPage(
-          name: name,
-          address: lokasi,
-          logoPath: "https://via.placeholder.com/150",
-        )));
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(color: const Color(0xFFEBF1FD), borderRadius: BorderRadius.circular(15)),
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: const Color(0xFF002583),
-              child: Text(getInitials(name), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(lokasi),
-              ],
-            ),
           ],
         ),
       ),

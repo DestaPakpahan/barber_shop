@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; 
-import 'package:baber/services/api_service.dart'; 
-import 'detail_transaksi.dart'; 
-import 'owner_all_page.dart';
-import 'wallet.dart';
-import 'profil.dart';
+import 'package:intl/intl.dart';
+import 'package:baber/services/api_service.dart';
+import 'detail_transaksi.dart';
+
+class AppColors {
+  static const Color primaryNavy = Color(0xFF002583);
+  static const Color cardGrey = Color(0xFFEDEFF5);
+  static const Color accentYellow = Color(0xFFFEB800);
+}
 
 class TotalTransaksiPage extends StatefulWidget {
   const TotalTransaksiPage({super.key});
@@ -14,8 +17,7 @@ class TotalTransaksiPage extends StatefulWidget {
 }
 
 class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
-  final ApiService apiService = ApiService(); 
-  int _currentIndex = 0; 
+  final ApiService apiService = ApiService();
 
   String formatRupiah(dynamic amount) {
     if (amount == null) return "Rp 0";
@@ -23,14 +25,13 @@ class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
     return NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(number);
   }
 
-  // Helper: Mengubah format ISO created_at menjadi tanggal yang rapi
   String formatTanggalDatabase(dynamic dateStr) {
     if (dateStr == null || dateStr.toString().isEmpty) return "-";
     try {
       DateTime parsedDate = DateTime.parse(dateStr.toString());
       return DateFormat('dd-MM-yyyy').format(parsedDate);
     } catch (e) {
-      return dateStr.toString(); 
+      return dateStr.toString();
     }
   }
 
@@ -42,9 +43,20 @@ class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back, color: AppColors.primaryNavy),
+            onPressed: () {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              } else {
+                Navigator.pushReplacementNamed(context, '/dashboard');
+              }
+            },
+          ),
+        title: const Text(
+          "Riwayat SaaS Fee",
+          style: TextStyle(color: AppColors.primaryNavy, fontSize: 18, fontWeight: FontWeight.bold),
         ),
+        titleSpacing: 0, // Mengatur jarak antara tombol back dan teks
       ),
       body: FutureBuilder<List<dynamic>?>(
         future: apiService.getTransactions(),
@@ -59,10 +71,7 @@ class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
 
           if (snapshot.hasError || snapshot.data == null) {
             return const Center(
-              child: Text(
-                "Gagal memuat data transaksi", 
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-              ),
+              child: Text("Gagal memuat data transaksi", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
             );
           }
 
@@ -71,35 +80,18 @@ class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
 
           return Column(
             children: [
-              // Header Judul
-              const Text(
-                "Riwayat Transaksi",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF002583),
-                ),
-              ),
-              const Text(
-                "Aktivitas layanan di semua cabang",
-                style: TextStyle(color: Color(0xFFFEB800), fontSize: 12),
-              ),
-              const SizedBox(height: 25),
-
-              // Ringkasan Transaksi Dinamis
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
                     _buildSummaryCard(totalTransaksi.toString(), "Total\nTransaksi"),
                     const SizedBox(width: 15),
-                    _buildSummaryCard(totalTransaksi.toString(), "Transaksi\nSelesai"), 
+                    _buildSummaryCard(totalTransaksi.toString(), "Transaksi\nSelesai"),
                   ],
                 ),
               ),
               const SizedBox(height: 30),
-
-              // Judul List
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Align(
@@ -111,35 +103,27 @@ class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
                 ),
               ),
               const SizedBox(height: 10),
-
-              // Daftar Transaksi Berdasarkan Database Developer
               Expanded(
                 child: transactions.isEmpty
-                    ? const Center(
-                        child: Text(
-                          "Belum ada riwayat transaksi", 
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      )
+                    ? const Center(child: Text("Belum ada riwayat transaksi", style: TextStyle(color: Colors.grey)))
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         itemCount: transactions.length,
                         itemBuilder: (context, index) {
                           final tx = transactions[index];
-                          
-                          String idTransaksi = "TX-#${tx['id'] ?? (index + 1)}";
-                          String totalBayar = formatRupiah(tx['amount']); 
-                          String metodeBayar = (tx['type'] ?? 'DEDUCTION').toString().toUpperCase(); 
+                          String idTransaksi = "TX-${tx['id'] ?? (index + 1)}";
+                          String totalBayar = formatRupiah(tx['amount']);
+                          String metodeBayar = (tx['type'] ?? 'DEDUCTION').toString().toUpperCase();
                           String namaOwner = tx['owner'] != null ? tx['owner']['name'] : "Owner";
                           String waktuTampil = formatTanggalDatabase(tx['created_at']);
 
                           return _buildActivityItem(
                             context,
-                            idTransaksi, 
+                            idTransaksi,
                             waktuTampil,
                             "Fee: $totalBayar | Tipe: $metodeBayar ($namaOwner)",
-                            (tx['status'] ?? 'Selesai').toString().toUpperCase(), 
-                            'https://placehold.co/150', 
+                            (tx['status'] ?? 'Selesai').toString().toUpperCase(),
+                            'https://placehold.co/150',
                           );
                         },
                       ),
@@ -148,7 +132,6 @@ class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
           );
         },
       ),
-      // bottomNavigationBar: _buildBottomNav(),
     );
   }
 
@@ -156,22 +139,12 @@ class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0xFFEBF2FF),
-          borderRadius: BorderRadius.circular(15),
-        ),
+        decoration: BoxDecoration(color: const Color(0xFFEBF2FF), borderRadius: BorderRadius.circular(15)),
         child: Column(
           children: [
-            Text(
-              value,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF002583)),
-            ),
+            Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF002583))),
             const SizedBox(height: 5),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
+            Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, color: Colors.grey)),
           ],
         ),
       ),
@@ -180,29 +153,15 @@ class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
 
   Widget _buildActivityItem(BuildContext context, String title, String time, String desc, String status, String imgUrl) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DetailTransaksiPage(
-              storeName: title,
-              date: time,
-            ),
-          ),
-        );
-      },
       child: Container(
-        color: Colors.transparent, 
+        color: Colors.transparent,
         child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundImage: NetworkImage(imgUrl),
-                  ),
+                  CircleAvatar(radius: 25, backgroundImage: NetworkImage(imgUrl)),
                   const SizedBox(width: 15),
                   Expanded(
                     child: Column(
@@ -219,21 +178,8 @@ class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(
-                              child: Text(
-                                desc, 
-                                style: const TextStyle(fontSize: 12, color: Colors.grey), 
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Text(
-                              "[$status]", 
-                              style: TextStyle(
-                                fontSize: 11, 
-                                color: status == 'APPROVED' ? Colors.green : Colors.orange, 
-                                fontWeight: FontWeight.bold
-                              ),
-                            ),
+                            Expanded(child: Text(desc, style: const TextStyle(fontSize: 12, color: Colors.grey), overflow: TextOverflow.ellipsis)),
+                            Text("[$status]", style: TextStyle(fontSize: 11, color: status == 'APPROVED' ? Colors.green : Colors.orange, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ],
@@ -248,48 +194,4 @@ class _TotalTransaksiPageState extends State<TotalTransaksiPage> {
       ),
     );
   }
-
-  // Widget _buildBottomNav() {
-  //   return Container(
-  //     decoration: const BoxDecoration(
-  //       border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1)),
-  //     ),
-  //     child: BottomNavigationBar(
-  //       currentIndex: _currentIndex,
-  //       onTap: (index) {
-  //         setState(() {
-  //           _currentIndex = index;
-  //         });
-
-  //         // Logika rute navigasi menu
-  //         switch (index) {
-  //           case 0:
-  //             break;
-  //           case 1:
-  //             Navigator.push(context, MaterialPageRoute(builder: (context) => const OwnerAllPage()));
-  //             break;
-  //           case 2:
-  //             Navigator.push(context, MaterialPageRoute(builder: (context) => const Wallet()));
-  //             break;
-  //           case 3:
-  //             Navigator.push(context, MaterialPageRoute(builder: (context) => const Profil()));
-  //             break;
-  //         }
-  //       },
-  //       type: BottomNavigationBarType.fixed,
-  //       backgroundColor: Colors.white,
-  //       selectedItemColor: const Color(0xFF002583), // Menggantikan AppColors.primaryNavy
-  //       unselectedItemColor: Colors.black38,
-  //       selectedFontSize: 11,
-  //       unselectedFontSize: 11,
-  //       selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-  //       items: const [
-  //         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-  //         BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Owners'),
-  //         BottomNavigationBarItem(icon: Icon(Icons.wallet), label: 'Wallet'),
-  //         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-  //       ],
-  //     ),
-  //  );
-  }
-//}
+}
